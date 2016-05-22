@@ -26,7 +26,8 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 
-#define ISspace(x) isspace((int)(x))
+#define ISspace(x) isspace((int)(x))  // isspace() 判断 x 是否为空格字符，包括: 
+                                      // 空格(' ')、水平定位符('\t')、归位符('\r')、换行符('\n')、垂直定位符('\v')、翻页符('\f')
 
 #define SERVER_STRING "Server: jdbhttpd/0.1.0\r\n"
 
@@ -70,7 +71,7 @@ void accept_request(int client)
  }
  method[i] = '\0';
 
- if (strcasecmp(method, "GET") && strcasecmp(method, "POST"))
+ if (strcasecmp(method, "GET") && strcasecmp(method, "POST"))  //  strcasecmp() 忽略大小写比较字符串
  {
   unimplemented(client);
   return;
@@ -316,10 +317,10 @@ int get_line(int sock, char *buf, int size)
   {
    if (c == '\r')
    {
-    n = recv(sock, &c, 1, MSG_PEEK);
+    n = recv(sock, &c, 1, MSG_PEEK);  // MSG_PEEK 标志，实现从 tcp buffer 中读取数据，而不移除已读的数据，下次还可以再用
     /* DEBUG printf("%02X\n", c); */
     if ((n > 0) && (c == '\n'))
-     recv(sock, &c, 1, 0);
+     recv(sock, &c, 1, 0);  // recv 最后一个参数置0，则读取tcp buffer数据，并删除 tcp buffer 中被读取的数据
     else
      c = '\n';
    }
@@ -428,7 +429,7 @@ int startup(u_short *port)
  memset(&name, 0, sizeof(name));
  name.sin_family = AF_INET;
  name.sin_port = htons(*port);
- name.sin_addr.s_addr = htonl(INADDR_ANY);
+ name.sin_addr.s_addr = htonl(INADDR_ANY);  // hp_ INADDR_ANY  equals to inet_addr("0.0.0.0")
  if (bind(httpd, (struct sockaddr *)&name, sizeof(name)) < 0)
   error_die("bind");
  if (*port == 0)  /* if dynamically allocating a port */
